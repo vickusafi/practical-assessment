@@ -2,6 +2,7 @@ package com.practical_assessment.practical_assessment.service.Impl;
 
 import com.practical_assessment.practical_assessment.dto.AccountRequestDTO;
 import com.practical_assessment.practical_assessment.entity.Account;
+import com.practical_assessment.practical_assessment.exception.AccountNotFoundException;
 import com.practical_assessment.practical_assessment.exception.DuplicateAccountException;
 import com.practical_assessment.practical_assessment.repository.AccountRepository;
 import com.practical_assessment.practical_assessment.response.AccountResponse;
@@ -12,12 +13,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.util.Currency;
+import java.util.Locale;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    //CREATE CUSTOMER ACCOUNT
     @Override
     public AccountResponse createAccount(AccountRequestDTO accountRequestDTO) {
 
@@ -44,8 +50,25 @@ public class AccountServiceImpl implements AccountService {
 
     }
 
+
+    //GET ACCOUNT BALANCE
     @Override
     public BalanceResponse getBalance(String accountNumber) {
-        return null;
+        log.info("Fetching balance for account: {}", accountNumber);
+
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException(accountNumber));
+
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.ENGLISH);
+        currencyFormat.setCurrency(Currency.getInstance("KES"));
+        String formatted = currencyFormat.format(account.getBalance());
+        return BalanceResponse.builder()
+                .accountNumber(account.getAccountNumber())
+                .ownerName(account.getOwnerName())
+                .balance(account.getBalance())
+                .formattedBalance(formatted)
+                .currency("KES")
+                .asOf(LocalDateTime.now())
+                .build();
     }
 }
