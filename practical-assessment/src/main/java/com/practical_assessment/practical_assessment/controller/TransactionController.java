@@ -1,6 +1,7 @@
 package com.practical_assessment.practical_assessment.controller;
 
 import com.practical_assessment.practical_assessment.dto.TransactionRequestDTO;
+import com.practical_assessment.practical_assessment.dto.TransferRequestDTO;
 import com.practical_assessment.practical_assessment.response.ApiResponse;
 import com.practical_assessment.practical_assessment.response.TransactionResponse;
 import com.practical_assessment.practical_assessment.service.TransactionService;
@@ -33,6 +34,16 @@ public class TransactionController {
         TransactionResponse response = transactionService.recordTransaction(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Transaction recorded successfully", response));
+    }
+
+
+    //TRANSFER FUNDS
+    @PostMapping("/transfer")
+    public ResponseEntity<ApiResponse<TransactionResponse>> transferFunds(
+            @Valid @RequestBody TransferRequestDTO request) throws InvalidTransactionException {
+        log.info("Incoming transfer request: {}", request);
+        TransactionResponse response = transactionService.transferFunds(request);
+        return ResponseEntity.ok(ApiResponse.success("Transfer completed successfully", response));
     }
 
 
