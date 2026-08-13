@@ -54,4 +54,13 @@ public class GlobalExceptionHandler {
         response.setData(fieldErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+
+    //Invalid transaction
+    @ExceptionHandler(InvalidTransactionException.class)
+    public ResponseEntity<ApiResponse<Object>> handleInvalidTransaction(InvalidTransactionException ex) {
+        log.warn("Invalid transaction: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
 }
