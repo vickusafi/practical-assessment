@@ -20,4 +20,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(ex.getMessage()));
     }
+
+    //Handle Duplicate Account
+    @ExceptionHandler(DuplicateAccountException.class)
+    public ResponseEntity<ApiResponse<Object>> handleDuplicateAccount(DuplicateAccountException ex) {
+        log.warn("Duplicate account: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
 }
